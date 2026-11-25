@@ -1,0 +1,58 @@
+flowchart LR
+    %% Внутренние акторы
+    LabAdmin(("Лаборант / инженер ПГНИУ (SH-03)"))
+    Ecologist(("Эколог / научный сотрудник ПГНИУ (SH-01)"))
+    DeptHead(("Заведующий кафедрой ПГНИУ (SH-02)"))
+
+    %% Внешние акторы
+    OilCompany(("Нефтедобывающая компания (SH-04)"))
+    Regulator(("Росприроднадзор (SH-05)"))
+
+    subgraph System ["Приложение для для выявления участков механогенеза и нафтогалогенеза по аэрофотоснимкам (ПГНИУ)"]
+        UC01(["UC-01 [FR-01] Создание карточки места и загрузка аэрофотоснимка"])
+        UC01_1(["UC-02 [FR-01.1] Сохранение истории снимков места (>1)"])
+        UC01_2(["UC-03 [FR-01.2] Сравнение двух снимков места за разные даты"])
+        UC02(["UC-04 [FR-02] Автосегментация снимка нейросетью"])
+        UC03(["UC-05 [FR-03] Просмотр снимка и подсветки зон нарушений"])
+        UC04(["UC-06 [FR-04] Ручная правка контуров разметки"])
+        UC05(["UC-07 [FR-05] Автоматический расчёт площади нарушений"])
+        UC06(["UC-08 [FR-06] Просмотр обзорной карты с метками мест"])
+        UC06_1(["UC-09 [FR-06.1] Открытие списка снимков при клике на метку"])
+        UC06_2(["UC-10 [FR-06.2] Фильтрация меток на карте по типам нарушений"])
+        UC07(["UC-11 [FR-07] Выгрузка отчёта (PDF) и координат (GeoJSON)"])
+        UC08(["UC-12 [FR-08] Авторизация"])
+        UC09(["UC-13 [FR-09] Добавление текстовых заметок к контурам"])
+    end
+
+    LabAdmin --- UC01
+    LabAdmin --- UC03
+    LabAdmin --- UC08
+
+    Ecologist --- UC01
+    Ecologist --- UC01_2
+    Ecologist --- UC03
+    Ecologist --- UC04
+    Ecologist --- UC06
+    Ecologist --- UC07
+    Ecologist --- UC08
+    Ecologist --- UC09
+
+    DeptHead --- UC01_2
+    DeptHead --- UC03
+    DeptHead --- UC06
+    DeptHead --- UC07
+    DeptHead --- UC08
+
+    OilCompany --- UC01
+    UC07 --- OilCompany
+    UC07 --- Regulator
+
+    UC01 -.->|"&laquo;include&raquo;"| UC01_1
+    UC01 -.->|"&laquo;include&raquo;"| UC02
+    UC02 -.->|"&laquo;include&raquo;"| UC05
+    UC04 -.->|"&laquo;include&raquo;"| UC05
+
+    UC06_1 -.->|"&laquo;extend&raquo;"| UC06
+    UC06_2 -.->|"&laquo;extend&raquo;"| UC06
+    UC01_2 -.->|"&laquo;extend&raquo;"| UC06_1
+    UC09 -.->|"&laquo;extend&raquo;"| UC03
